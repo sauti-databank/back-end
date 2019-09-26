@@ -53,6 +53,12 @@ typings/
 # Optional eslint cache
 .eslintcache
 
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
 # Optional REPL history
 .node_repl_history
 
@@ -72,19 +78,12 @@ typings/
 # next.js build output
 .next
 
-#database
-.db3
-
-#env
-
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-=======
 # nuxt.js build output
 .nuxt
+
+# gatsby files
+.cache/
+public
 
 # vuepress build output
 .vuepress/dist

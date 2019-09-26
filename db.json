@@ -1,0 +1,81 @@
+{
+    "users": [
+        {
+        "id": "1",
+        "cell_num": "8798697987987",
+        "age": 40,
+        "education" : "primary",
+        "crossing_freq" : "weekly",
+        "produce" : "Yes",
+        "primary_income" : "No",
+        "language": "French",
+        "country_of_residence" : "KEN",
+        "genderId" : "1"
+        
+        },
+        {
+          "id": "2",
+          "cell_num": "8798694546754987",
+          "age": 31,
+          "education": "secondary",
+          "crossing_freq": "bi-weekly",
+          "produce": "No",
+          "primary_income": "Yes",
+          "language": "Swahili",
+          "country_of_residence": "UGA",
+          "genderId": "2"
+        },
+         {
+          "id": "3",
+          "cell_num": "8798694546754997",
+          "age": 39,
+          "education": "primary",
+          "crossing_freq": "monthly",
+          "produce": "Yes",
+          "primary_income": "Yes",
+          "language": "French",
+          "country_of_residence": "UGA",
+          "genderId": "2"
+        },
+        {
+          "id": "4",
+          "cell_num": "8790094546754997",
+          "age": 29,
+          "education": "none",
+          "crossing_freq": "weekly",
+          "produce": "Yes",
+          "primary_income": "Yes",
+          "language": "Swahili",
+          "country_of_residence": "KEN",
+          "genderId": "3"
+        },
+        {
+          "id": "5",
+          "cell_num": "879865487987",
+          "age": 26,
+          "education" : "primary",
+          "crossing_freq" : "daily",
+          "produce" : "No",
+          "primary_income" : "No",
+          "language": "Arabic",
+          "country_of_residence" : "KEN",
+          "genderId" : "1"
+          }   
+],
+    
+    "genders":[
+        {
+            "id" : "1",
+            "gender" : "female" 
+        },
+        {
+            "id": "2",
+            "gender" : "male"
+        },
+        {
+          "id": "3",
+          "gender": "not specified"
+        }
+    ]
+    
+}
