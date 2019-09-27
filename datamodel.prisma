@@ -1,0 +1,75 @@
+type ConceptDatum @db(name: "concept_data") {
+  data_id: Int! @id
+  cellNum: String! @db(name: "cell_num")
+  dataKey: String! @db(name: "data_key")
+  dataValue: String! @db(name: "data_value")
+}
+
+type InfoDemandTest @db(name: "info_demand_test") {
+  id: Int! @id
+  platformSessionId: Int! @db(name: "platform_session_id")
+  requestId: Int! @db(name: "request_id")
+  userId: Int! @db(name: "user_id")
+}
+
+type InformationDemand @db(name: "information_demand") {
+  id: Int! @id
+  platformSessionId: Int! @db(name: "platform_session_id")
+  requestId: Int! @db(name: "request_id")
+  userId: Int! @db(name: "user_id")
+}
+
+type PlatformMarketPrice @db(name: "platform_market_prices") {
+  id: Int! @id
+  # If this is outside the SD this is turned off
+  active: Boolean! @default(value: 1)
+  country: String!
+  currency: String!
+  date: DateTime!
+  market: String!
+  product: String!
+  productAgg: String! @db(name: "product_agg")
+  productCat: String! @db(name: "product_cat")
+  retail: Int!
+  source: String!
+  udate: DateTime! @default(value: "CURRENT_TIMESTAMP")
+  unit: String!
+  wholesale: Int!
+}
+
+type PlatformSession @db(name: "platform_sessions") {
+  sess_id: Int! @id
+  cellNum: String! @db(name: "cell_num")
+  createdDate: DateTime! @db(name: "created_date")
+  data: String!
+  notes: String!
+  platformId: Int @db(name: "platform_id")
+  # PST
+  udate: DateTime! @default(value: "CURRENT_TIMESTAMP")
+}
+
+type RequestType @db(name: "request_types") {
+  id: Int! @id
+  requestType: String! @db(name: "request_type")
+  requestValue: String! @db(name: "request_value")
+}
+
+type Test @db(name: "test") {
+  id: Int
+  platformSessionId: Int @db(name: "platform_session_id")
+  requestId: Int @db(name: "request_id")
+  userId: Int @db(name: "user_id")
+}
+
+type User @db(name: "users") {
+  id: Int! @id
+  age: String
+  cellNum: String @db(name: "cell_num")
+  countryOfResidence: String @db(name: "country_of_residence")
+  crossingFreq: String @db(name: "crossing_freq")
+  education: String
+  gender: String
+  language: String
+  primaryIncome: String @db(name: "primary_income")
+  produce: String
+}
