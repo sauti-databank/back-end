@@ -5,3 +5,5 @@ const sequelize = new Sequelize('mysql', 'lambda2019', 'JlgRzqmvh83Z', {
     dialect: 'mysql',
     port: 3306
 } )
+
+module.exports sequelize;
