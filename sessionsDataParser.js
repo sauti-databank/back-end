@@ -5,6 +5,9 @@ let unserializer = require("php-unserialize");
 const bcrypt = require("bcryptjs");
 const InfoDemand = require("./routes/infodemand-model");
 
+//The purpose of this data parser is to parse the info that is stored inside the data column of the platform_sessions table in PHP serialized format, and populate it into new tables built according to this data model (ADD HERE) to enable building a backend/frontend for the data portal
+
+// this is the list of all the types of requests that traders make that we want to parse from the data and put inside the tables
 const request_types = [
   "procedurecommodity",
   "procedurecommoditycat",
@@ -20,62 +23,47 @@ const request_types = [
 ];
 
 try {
-  //accessing the session model and and the platform sessions table
+  //accessing the session model and the platform sessions table
   Sessions.findLanceData().then(
     //sessions is the entire platform sessions table(array)
     sessions => {
-      // console.log('sessions size', sessions.length);
-
       //sessions filtering through each row and grabbing/getting each row that has non-zero data field
       //we don't need to unserialize if it doesn't have data
-      let array = sessions.filter(row => {
+      let newArr = sessions.filter(row => {
         return row.data.length > 0;
       });
 
-      // console.log('Array size', array.length);
-      //slicing the array to condense the amount of data retrieved/taking a subset of 2 sessions:
-      let newArr = array; //.slice(0, 1000);
-
-      // making a new array
+      // making a new array that we'll populate with the cleaned data. This is the array that will be used to then populate the
       let infoArr = [];
 
-      // const test_data_544 = unserializer.unserialize(
-      //   'a:9:{s:21:"procedurecommoditycat";a:2:{i:0;s:7:"Cereals";i:1;s:6:"Pulses";}s:18:"procedurecommodity";a:2:{i:0;s:7:"Sorghum";i:1;s:10:"Groundnuts";}s:13:"proceduredest";a:2:{i:0;s:3:"KEN";i:1;s:3:"KEN";}s:15:"procedureorigin";a:2:{i:0;s:3:"EAC";i:1;s:3:"EAC";}s:14:"procedurevalue";a:2:{i:0;s:22:"Greater than $2000 USD";i:1;s:19:"Less than $2000 USD";}s:16:"commoditycountry";a:1:{i:0;s:3:"KEN";}s:15:"commoditymarket";a:1:{i:0;s:5:"Kisii";}s:12:"commoditycat";a:1:{i:0;s:12:"Seeds & Nuts";}s:16:"commodityproduct";a:1:{i:0;s:10:"Groundnuts";}}'
-      // );
-
-      // console.log("544 bytes serialization successful", test_data_544);
-
-      // const test_data_500 = unserializer.unserialize(
-      //   'a:13:{s:16:"commoditycountry";s:3:"KEN";s:15:"commoditymarket";s:6:"Kisumu";s:12:"commoditycat";s:14:"Cereals - Rice";s:16:"commodityproduct";s:4:"Rice";s:15:"alertsmarketcat";s:15:"Cereals - Maize";s:19:"alertsmarketproduct";s:9:"Dry Maize";s:20:"alertsmarketcountry1";s:3:"KEN";s:13:"alertsmarket1";s:7:"Eldoret";s:21:"procedurecommoditycat";s:7:"Cereals";s:18:"procedurecommodity";s:16:"Rice - Processed";s:13:"proceduredest";s:3:"UGA";s:15:"procedureorigin";s:3:"EAC";s:14:"procedurevalue";s:3:"2'
-      // );
-
-      // console.log("500 bytes serialization successful", test_data_500);
-
       let err_count = 0;
-      //looping through the new array
+      //looping through the newArr to unserialize the data that's in it
       newArr.forEach((serializedRow, index) => {
         // we created a variable and now we are unserializing the data that we looped through
-        // console.log(serializedRow.data);
+
         try {
+          //this line is very critical in that it uses the npm package php-unserialize to take PHP serialized data and turn it into a javascript object
           const data = unserializer.unserialize(serializedRow.data);
-          // console.log("sess_id: ", serializedRow.sess_id, " ", data);
 
-          //Object.keys returning the enumerable keys from the data, looping through each key and pushing this info into the empty infoArr
+          //Object.keys turns the set of keys in the data object into an array so we can loop over them with a forEach.
           Object.keys(data).forEach(key => {
-            // console.log("Key", keyEle);
-
+            //next, we need to take each key in the data object and check to see if it is in the request_types array (line 11) because those are the only keys we are interested in.
             request_types.forEach(request_type => {
               if (key === request_type) {
                 const request_value = data[key];
+                // we then check the value for each key. The value is stored in 2 different formats so we have an if/else statement to handle the two formats:
+                // format 1: if request_value is stored as a string
                 if (typeof request_value === "string") {
                   infoArr.push({
                     id: infoArr.length, //incrementing the id by the length of the array
                     platform_sessions_id: serializedRow.sess_id, // from the serialized data in the newArr that was created from the sess_id: value
                     cell_num: serializedRow.cell_num, // from the serialized data in the newArr that was created from the cell_num: value
-                    request_type_id: request_types.indexOf(key) + 1,
+                    request_type_id: request_types.indexOf(key) + 1, //foreign key equivalence
                     request_value: data[key] //request_value is receiving its value from the data variable which uses the key element as its index
                   });
-                } else {
+                }
+                // format 2: if request_value is stored as an object of several values. Te storage format is {"0": "KEN", "1": "RWA"..}
+                else {
                   Object.values(request_value).forEach(value => {
                     infoArr.push({
                       id: infoArr.length, //incrementing the id by the length of the array
@@ -85,8 +73,6 @@ try {
                       request_value: value //request_value is receiving its value from the data variable which uses the key element as its index
                     });
                   });
-                  // console.log("not a string")
-                  // console.log(request_value);
                 }
               }
             });
@@ -100,18 +86,12 @@ try {
             serializedRow.sess_id
           );
         }
-        // console.log('infoArr', infoArr); //Seeing if the array now has access to the key value pairs(data)
       });
-      // console.log("infoArr", infoArr);
-      console.log("infoArr length", infoArr.length);
 
-      // for (var i = 0; i <= Math.floor(infoArr.length / 100); i++) {
-      //   const infoArr2 = infoArr.slice(i * 100, i * 100 + 100);
-      //   console.log(i);
-
-      for (const info_row of infoArr.slice(53000, infoArr.length)) {
+      // now, we add the array of unerialized and correctly sorted data to the information_demand table. The data addition was a manual process due to the rate at which the addition is happening is too quick for the database so it times out. We would've ideally liked to automate this batch processing and we tried several things to make it happen but they didn't work so in interest of time, we manually processed ~3000 rows at a time.
+      for (const info_row of infoArr.slice(52000, infoArr.length)) {
         try {
-          // console.log("adding row...", info_row);
+          //see infodemand-model for the function that adds the rows into the information_demand table
           InfoDemand.add(info_row);
         } catch ({ message }) {
           //
