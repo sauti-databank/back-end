@@ -27,7 +27,7 @@
     "dotenv": "^8.0.0",
     "express": "^4.17.0",
     "helmet": "^3.18.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "knex": "^0.17.0-next3",
     "knex-cleaner": "^1.1.4",
     "knex-csv-seeder": "^0.4.1",
